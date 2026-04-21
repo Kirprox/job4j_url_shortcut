@@ -4,4 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.job4j.shortcut.model.Site;
 
 public interface SiteRepository extends JpaRepository<Site, Long> {
+    Site findBySite(String url);
+
+    Site findByLogin(String login);
 }

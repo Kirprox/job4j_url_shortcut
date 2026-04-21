@@ -25,6 +25,7 @@ job4j_url_shortcut — это REST-сервис для сокращения URL-
 - Maven
 - PostgreSQL
 - Liquibase
+- Swagger
 
 ---
 

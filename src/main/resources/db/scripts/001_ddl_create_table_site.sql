@@ -1,7 +1,7 @@
 CREATE TABLE site
 (
     id SERIAL PRIMARY KEY,
-    domain VARCHAR(255) UNIQUE NOT NULL,
+    site VARCHAR(255) UNIQUE NOT NULL,
     login VARCHAR(255) UNIQUE,
     password VARCHAR(255)
 );
