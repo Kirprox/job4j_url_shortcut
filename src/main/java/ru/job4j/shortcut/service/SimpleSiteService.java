@@ -1,20 +1,26 @@
 package ru.job4j.shortcut.service;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.job4j.shortcut.dto.RegistrationResponseDTO;
+import ru.job4j.shortcut.config.JwtUtil;
+import ru.job4j.shortcut.dto.response.RegistrationResponseDTO;
 import ru.job4j.shortcut.model.Site;
 import ru.job4j.shortcut.repository.SiteRepository;
 
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
 @Service
 public class SimpleSiteService implements SiteService {
-    public SimpleSiteService(SiteRepository siteRepository) {
-        this.siteRepository = siteRepository;
-    }
-
     private final SiteRepository siteRepository;
+    private final JwtUtil jwtUtil;
+
+    public SimpleSiteService(SiteRepository siteRepository, JwtUtil jwtUtil) {
+        this.siteRepository = siteRepository;
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
     public RegistrationResponseDTO createSite(Site siteToCreate) {
@@ -39,8 +45,16 @@ public class SimpleSiteService implements SiteService {
     }
 
     @Override
-    public Site login(Site siteToLogin) {
-        return null;
+    public ResponseEntity<?> login(Site site) {
+        ResponseEntity<?> response;
+        Site existingSite = siteRepository.findByLogin(site.getLogin());
+        if (existingSite == null || !existingSite.getPassword().equals(site.getPassword())) {
+            response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } else {
+            String token = jwtUtil.generateToken(existingSite.getLogin());
+            response = ResponseEntity.ok(Map.of("token", token));
+        }
+        return response;
     }
 
     @Override

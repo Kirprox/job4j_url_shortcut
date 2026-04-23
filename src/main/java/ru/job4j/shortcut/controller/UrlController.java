@@ -3,8 +3,13 @@ package ru.job4j.shortcut.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.job4j.shortcut.model.Url;
+import ru.job4j.shortcut.dto.request.UrlRequestDto;
+import ru.job4j.shortcut.dto.response.RedirectResponseDTO;
+import ru.job4j.shortcut.dto.response.ShortUrlResponseDTO;
+import ru.job4j.shortcut.dto.response.StatisticResponceDTO;
 import ru.job4j.shortcut.service.UrlService;
+
+import java.util.List;
 
 @RestController
 public class UrlController {
@@ -15,20 +20,22 @@ public class UrlController {
     }
 
     @PostMapping("/convert")
-    public ResponseEntity<Url> convertUrl(@RequestBody Url urlToConvert) {
+    public ResponseEntity<ShortUrlResponseDTO> convertUrl(@RequestBody UrlRequestDto urlToConvert) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(urlService.convert(urlToConvert));
     }
 
     @GetMapping("/redirect/{code}")
-    public ResponseEntity<Url> redirectUrl(@PathVariable("code") String code) {
-        return ResponseEntity.status(302)
-                .header("Location", "supreme")
-                .body(urlService.redirect(code));
+    public ResponseEntity<Void> redirectUrl(@PathVariable String code) {
+        String url = urlService.redirect(code).getUrl();
+        System.out.println(url);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", url)
+                .build();
     }
 
     @GetMapping("/statistic")
-    public ResponseEntity<Url> getStatistic() {
+    public ResponseEntity<List<StatisticResponceDTO>> getStatistic() {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(urlService.getStatistic());
     }
