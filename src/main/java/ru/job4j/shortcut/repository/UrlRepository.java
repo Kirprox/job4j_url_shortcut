@@ -7,11 +7,12 @@ import ru.job4j.shortcut.model.Site;
 import ru.job4j.shortcut.model.Url;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UrlRepository extends JpaRepository<Url, Long> {
-    Url findByOriginalUrl(String url);
+    Optional<Url> findByOriginalUrl(String url);
 
-    Url findByCode(String code);
+    Optional<Url> findByCode(String code);
 
     @Modifying
     @Query("update Url u set u.total = u.total + 1 where u.code = :code")

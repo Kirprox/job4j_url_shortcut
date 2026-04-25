@@ -1,5 +1,6 @@
 package ru.job4j.shortcut.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import ru.job4j.shortcut.model.Site;
 import ru.job4j.shortcut.repository.SiteRepository;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -27,12 +29,11 @@ public class SimpleSiteService implements SiteService {
         String login;
         String password;
         boolean registration = true;
-        Site existingSite = siteRepository.findBySite(siteToCreate.getSite());
-
-        if (existingSite != null) {
+        Optional<Site> existingSite = siteRepository.findBySite(siteToCreate.getSite());
+        if (existingSite.isPresent()) {
             registration = false;
-            login = existingSite.getLogin();
-            password = existingSite.getPassword();
+            login = existingSite.get().getLogin();
+            password = existingSite.get().getPassword();
 
         } else {
             login = generateLogin();
@@ -47,11 +48,11 @@ public class SimpleSiteService implements SiteService {
     @Override
     public ResponseEntity<?> login(Site site) {
         ResponseEntity<?> response;
-        Site existingSite = siteRepository.findByLogin(site.getLogin());
-        if (existingSite == null || !existingSite.getPassword().equals(site.getPassword())) {
+        Optional<Site> existingSite = siteRepository.findByLogin(site.getLogin());
+        if (existingSite.isEmpty() || !existingSite.get().getPassword().equals(site.getPassword())) {
             response = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } else {
-            String token = jwtUtil.generateToken(existingSite.getLogin());
+        } else { //выбросить исключение и изменить метод
+            String token = jwtUtil.generateToken(existingSite.get().getLogin());
             response = ResponseEntity.ok(Map.of("token", token));
         }
         return response;
@@ -59,7 +60,9 @@ public class SimpleSiteService implements SiteService {
 
     @Override
     public Site findByLogin(String login) {
-        return siteRepository.findByLogin(login);
+        return siteRepository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException("Not found Site by login "
+                        + login));
     }
 
     private String generateLogin() {
