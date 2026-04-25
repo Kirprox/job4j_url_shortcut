@@ -6,12 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.job4j.shortcut.config.JwtUtil;
 import ru.job4j.shortcut.dto.response.RegistrationResponseDTO;
 import ru.job4j.shortcut.model.Site;
 import ru.job4j.shortcut.service.SiteService;
-
-import java.util.Map;
 
 @RestController
 public class SiteController {

@@ -15,10 +15,14 @@ import lombok.Setter;
 @Table(name = "site")
 public class Site {
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank
+    @Column(name = "site", nullable = false)
     private String site;
+    @Column(name = "login", nullable = false)
     private String login;
+    @Column(name = "password", nullable = false)
     private String password;
 }

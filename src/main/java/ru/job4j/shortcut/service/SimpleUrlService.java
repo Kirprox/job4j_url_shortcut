@@ -1,5 +1,6 @@
 package ru.job4j.shortcut.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -12,8 +13,9 @@ import ru.job4j.shortcut.model.Url;
 import ru.job4j.shortcut.repository.UrlRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-@Transactional
+
 @Service
 public class SimpleUrlService implements UrlService {
     private final UrlRepository urlRepository;
@@ -29,9 +31,10 @@ public class SimpleUrlService implements UrlService {
         String code;
         String login = getLogin();
         Site existingSite = siteService.findByLogin(login);
-        Url existingUrl = urlRepository.findByOriginalUrl(requestDto.getUrl());
-        if (existingUrl != null) {
-            code = existingUrl.getCode();
+        Optional<Url> existingUrl = urlRepository.findByOriginalUrl(requestDto.getUrl());
+
+        if (existingUrl.isPresent()) {
+            code = existingUrl.get().getCode();
         } else {
             code = generateCode();
             Url urlEntity = new Url(
@@ -44,9 +47,13 @@ public class SimpleUrlService implements UrlService {
         return new ShortUrlResponseDTO(code);
     }
 
+    @Transactional
     @Override
     public RedirectResponseDTO redirect(String code) {
-        Url existingUrl = urlRepository.findByCode(code);
+        var existingUrl = urlRepository.findByCode(code)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Not found Url by code:" + code
+                ));
         urlRepository.incrementTotalByCode(code);
         return new RedirectResponseDTO(existingUrl.getOriginalUrl());
     }
@@ -55,7 +62,6 @@ public class SimpleUrlService implements UrlService {
     public List<StatisticResponceDTO> getStatistic() {
         String login = getLogin();
         Site existingSite = siteService.findByLogin(login);
-
         return urlRepository.findBySite(existingSite).stream()
                 .map(url -> new StatisticResponceDTO(
                         url.getOriginalUrl(), url.getTotal()

@@ -3,8 +3,10 @@ package ru.job4j.shortcut.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.job4j.shortcut.model.Site;
 
-public interface SiteRepository extends JpaRepository<Site, Long> {
-    Site findBySite(String url);
+import java.util.Optional;
 
-    Site findByLogin(String login);
+public interface SiteRepository extends JpaRepository<Site, Long> {
+    Optional<Site> findBySite(String url);
+
+    Optional<Site> findByLogin(String login);
 }

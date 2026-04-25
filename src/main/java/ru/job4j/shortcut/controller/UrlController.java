@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.shortcut.dto.request.UrlRequestDto;
-import ru.job4j.shortcut.dto.response.RedirectResponseDTO;
 import ru.job4j.shortcut.dto.response.ShortUrlResponseDTO;
 import ru.job4j.shortcut.dto.response.StatisticResponceDTO;
 import ru.job4j.shortcut.service.UrlService;
@@ -28,7 +27,6 @@ public class UrlController {
     @GetMapping("/redirect/{code}")
     public ResponseEntity<Void> redirectUrl(@PathVariable String code) {
         String url = urlService.redirect(code).getUrl();
-        System.out.println(url);
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", url)
                 .build();
