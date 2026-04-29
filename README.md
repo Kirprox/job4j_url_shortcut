@@ -29,5 +29,8 @@ job4j_url_shortcut — это REST-сервис для сокращения URL-
 
 ---
 
+## Покрытие тестами
+
+![процент покрытия тестами.png](screenshots%2F%EF%F0%EE%F6%E5%ED%F2%20%EF%EE%EA%F0%FB%F2%E8%FF%20%F2%E5%F1%F2%E0%EC%E8.png)
 
 

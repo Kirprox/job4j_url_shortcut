@@ -1,5 +1,6 @@
 package ru.job4j.shortcut.repository;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +15,8 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
 
     Optional<Url> findByCode(String code);
 
-    @Modifying
+    @Transactional
+    @Modifying(clearAutomatically = true)
     @Query("update Url u set u.total = u.total + 1 where u.code = :code")
     void incrementTotalByCode(String code);
 
